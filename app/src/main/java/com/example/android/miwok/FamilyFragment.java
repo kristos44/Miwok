@@ -1,34 +1,24 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.miwok;
 
+
 import android.content.Context;
-import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class PhrasesActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class FamilyFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
@@ -42,12 +32,17 @@ public class PhrasesActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.word_list);
+    public FamilyFragment() {
+        // Required empty public constructor
+    }
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.word_list, container, false);
+
+        mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             @Override
@@ -66,21 +61,21 @@ public class PhrasesActivity extends AppCompatActivity {
         };
 
         final ArrayList<Word> words = new ArrayList<>(Arrays.asList(
-            new Word("minto wuksus","Where are you going?", R.raw.phrase_where_are_you_going),
-            new Word("tinnә oyaase'nә","What is your name?", R.raw.phrase_what_is_your_name),
-            new Word("oyaaset...","My name is...", R.raw.phrase_my_name_is),
-            new Word("michәksәs?","How are you feeling?", R.raw.phrase_how_are_you_feeling),
-            new Word("kuchi achit","I’m feeling good.", R.raw.phrase_im_feeling_good),
-            new Word("әәnәs'aa?","Are you coming?", R.raw.phrase_are_you_coming),
-            new Word("hәә’ әәnәm","Yes, I’m coming.", R.raw.phrase_yes_im_coming),
-            new Word("әәnәm","I’m coming.", R.raw.phrase_im_coming),
-            new Word("yoowutis","Let’s go.", R.raw.phrase_lets_go),
-            new Word("әnni'nem","Come here.", R.raw.phrase_come_here)
+                new Word("әpә","father", R.drawable.family_father, R.raw.family_father),
+                new Word("әṭa","mother", R.drawable.family_mother, R.raw.family_mother),
+                new Word("angsi","son", R.drawable.family_son, R.raw.family_son),
+                new Word("tune","daughter", R.drawable.family_daughter, R.raw.family_daughter),
+                new Word("taachi","older brother", R.drawable.family_older_brother, R.raw.family_older_brother),
+                new Word("chalitti","younger brother", R.drawable.family_younger_brother, R.raw.family_younger_brother),
+                new Word("teṭe","older sister", R.drawable.family_older_sister, R.raw.family_older_sister),
+                new Word("kolliti","younger sister", R.drawable.family_younger_sister, R.raw.family_younger_sister),
+                new Word("ama","grandmother", R.drawable.family_grandmother, R.raw.family_grandfather),
+                new Word("paapa","grandfather", R.drawable.family_grandfather, R.raw.family_grandfather)
         ));
 
-        ListView listView = findViewById(R.id.list);
+        ListView listView = rootView.findViewById(R.id.list);
 
-        listView.setAdapter(new WordAdapter<Word>(this, words, R.color.category_phrases));
+        listView.setAdapter(new WordAdapter<Word>(getActivity(), words, R.color.category_family));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -96,7 +91,7 @@ public class PhrasesActivity extends AppCompatActivity {
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                     // Create and setup the {@link MediaPlayer} for the audio resource associated
                     // with the current word
-                    mMediaPlayer = MediaPlayer.create(PhrasesActivity.this, word.getSoundResourceId());
+                    mMediaPlayer = MediaPlayer.create(getActivity(), word.getSoundResourceId());
 
                     // Start the audio file
                     mMediaPlayer.start();
@@ -105,10 +100,12 @@ public class PhrasesActivity extends AppCompatActivity {
                 }
             }
         });
+
+        return rootView;
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
 
         releaseMediaPlayer();
@@ -135,4 +132,5 @@ public class PhrasesActivity extends AppCompatActivity {
     private void releaseAudioFocus() {
         mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
     }
+
 }

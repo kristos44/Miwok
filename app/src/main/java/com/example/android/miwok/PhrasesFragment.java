@@ -1,33 +1,24 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.miwok;
+
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class NumbersActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class PhrasesFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
@@ -41,12 +32,17 @@ public class NumbersActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.word_list);
+    public PhrasesFragment() {
+        // Required empty public constructor
+    }
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.word_list, container, false);
+
+        mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             @Override
@@ -65,21 +61,21 @@ public class NumbersActivity extends AppCompatActivity {
         };
 
         final ArrayList<Word> words = new ArrayList<>(Arrays.asList(
-            new Word("lutti","one", R.drawable.number_one, R.raw.number_one),
-            new Word("otiiko","two", R.drawable.number_two, R.raw.number_two),
-            new Word("tolookosu","three", R.drawable.number_three, R.raw.number_three),
-            new Word("oyyisa","four", R.drawable.number_four, R.raw.number_four),
-            new Word("massokka","five", R.drawable.number_five, R.raw.number_five),
-            new Word("temmokka","six", R.drawable.number_six, R.raw.number_six),
-            new Word("kenekaku","seven", R.drawable.number_seven, R.raw.number_seven),
-            new Word("kawinta","eight", R.drawable.number_eight, R.raw.number_eight),
-            new Word("wo’e","nine", R.drawable.number_nine, R.raw.number_nine),
-            new Word("na’aacha","ten", R.drawable.number_ten, R.raw.number_ten)
+                new Word("minto wuksus","Where are you going?", R.raw.phrase_where_are_you_going),
+                new Word("tinnә oyaase'nә","What is your name?", R.raw.phrase_what_is_your_name),
+                new Word("oyaaset...","My name is...", R.raw.phrase_my_name_is),
+                new Word("michәksәs?","How are you feeling?", R.raw.phrase_how_are_you_feeling),
+                new Word("kuchi achit","I’m feeling good.", R.raw.phrase_im_feeling_good),
+                new Word("әәnәs'aa?","Are you coming?", R.raw.phrase_are_you_coming),
+                new Word("hәә’ әәnәm","Yes, I’m coming.", R.raw.phrase_yes_im_coming),
+                new Word("әәnәm","I’m coming.", R.raw.phrase_im_coming),
+                new Word("yoowutis","Let’s go.", R.raw.phrase_lets_go),
+                new Word("әnni'nem","Come here.", R.raw.phrase_come_here)
         ));
 
-        ListView listView = findViewById(R.id.list);
+        ListView listView = rootView.findViewById(R.id.list);
 
-        listView.setAdapter(new WordAdapter<Word>(this, words, R.color.category_numbers));
+        listView.setAdapter(new WordAdapter<Word>(getActivity(), words, R.color.category_phrases));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -95,7 +91,7 @@ public class NumbersActivity extends AppCompatActivity {
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                     // Create and setup the {@link MediaPlayer} for the audio resource associated
                     // with the current word
-                    mMediaPlayer = MediaPlayer.create(NumbersActivity.this, word.getSoundResourceId());
+                    mMediaPlayer = MediaPlayer.create(getActivity(), word.getSoundResourceId());
 
                     // Start the audio file
                     mMediaPlayer.start();
@@ -104,10 +100,12 @@ public class NumbersActivity extends AppCompatActivity {
                 }
             }
         });
+
+        return rootView;
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
 
         releaseMediaPlayer();
@@ -134,4 +132,5 @@ public class NumbersActivity extends AppCompatActivity {
     private void releaseAudioFocus() {
         mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
     }
+
 }
